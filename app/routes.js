@@ -11,6 +11,18 @@ module.exports = function (app) {
       });
   });
 
+  app.get('/holdings', function (req, res) {
+    let tickers = Object.keys(req.query);
+    let holdings = req.query;
+
+    yahooService.getCurrentPrice(tickers)
+        .then((data) => {
+          res.send(responseTransformer.transformHoldings(data, holdings));
+        }).catch((error) => {
+      res.send(responseTransformer.transformError(error));
+    });
+  });
+
   app.get('/:tickers', function (req, res) {
     const tickers = req.params.tickers.split(',').map((ticker) => ticker.trim());
 

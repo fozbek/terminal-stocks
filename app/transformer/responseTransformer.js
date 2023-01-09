@@ -7,6 +7,7 @@ var AU = require('ansi_up');
 
 module.exports = {
   transformCurrentPrice: transformCurrentPrice,
+  transformHoldings: transformHoldings,
   transformHistoricalPrices: transformHistoricalPrices,
   transformMarketSummary: transformMarketSummary,
   transformError: transformError,
@@ -108,6 +109,46 @@ function transformCurrentPrice(data) {
     + colors.yellow(`TIP: You can view historical prices by: curl terminal-stocks.shashi.dev/historical/${data[0].ticker}\n\n`)
     + colors.blue.dim(`DISCLAIMER: For information purpose. Do not use for trading.\n`
       + colors.yellow.dim(`[twitter: @imSPG] [Github: https://github.com/shweshi/terminal-stocks]\n\n`));
+}
+
+String.prototype.float = function() {
+    return parseFloat(this.replaceAll(',', ''));
+}
+
+function transformHoldings(data, holdings) {
+  var table = new Table({
+    head: [
+      colors.yellow('Stock Name'),
+      colors.yellow('Current Price'),
+      colors.yellow('Holdings'),
+      colors.yellow('Balance'),
+      colors.yellow('Change'),
+      colors.yellow('% Change'),
+      colors.yellow('Day Range'),
+      colors.yellow('52 Week Range')
+    ],
+    style: {
+      head: []
+    },
+  });
+
+  for (let i = 0; i < data.length; i++) {
+    var holding = holdings[data[i].ticker]
+    table.push(
+      [
+        data[i].longName,
+        colors.cyan(data[i].price),
+        colors.cyan(String(holding)),
+        colors.cyan(String(new Intl.NumberFormat().format(data[i].price.float() * holding))),
+        (data[i].change < 0) ? colors.red(data[i].change) : colors.green(data[i].change),
+        (data[i].changePercent < 0) ? colors.red(data[i].changePercent) : colors.green(data[i].changePercent),
+        data[i].dayRange,
+        data[i].fiftyTwoWeekRange,
+      ]
+    );
+  }
+
+  return '\n' + table.toString() + '\n' + colors.grey(data[0].atDate) + '\n\n';
 }
 
 function transformHistoricalPrices(data) {

@@ -31,10 +31,20 @@ if (argv.json) {
     options.export = 'csv';
 }
 
+if (argv.holdings) {
+    const holdings = {
+        'BNB-USD': 13.13,
+        'SISE.IS': 263,
+        'SAYAS.IS': 276,
+    }
+    stocksCli.fetchHoldings(Object.keys(holdings), holdings);
+}
+
 if (argv.tickers) {
     const tickers = argv.tickers.split(',');
     stocksCli.fetchCurrentPrice(tickers, options);
 }
+
 if (argv.market) {
     stocksCli.fetchMarketSummary(options, options);
 } else if (argv.t || argv.ticker) {

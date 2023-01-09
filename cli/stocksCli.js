@@ -5,6 +5,7 @@ var responseTransformer = require('../app/transformer/responseTransformer');
 
 module.exports = {
     fetchCurrentPrice: fetchCurrentPrice,
+    fetchHoldings: fetchHoldings,
     fetchHistoricalPrices: fetchHistoricalPrices,
     fetchMarketSummary: fetchMarketSummary,
     fetchChart: fetchChart
@@ -22,6 +23,15 @@ function fetchCurrentPrice(tickers, options = {}) {
             } else {
                 console.log(responseTransformer.transformCurrentPrice(data));
             }
+        }).catch((error) => {
+            console.log(responseTransformer.transformError(error));
+        });
+}
+
+function fetchHoldings(tickers, holdings) {
+    yahooService.getCurrentPrice(tickers)
+        .then((data) => {
+            console.log(responseTransformer.transformHoldings(data, holdings))
         }).catch((error) => {
             console.log(responseTransformer.transformError(error));
         });
